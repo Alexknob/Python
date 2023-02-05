@@ -10,3 +10,6 @@ Notes and Code to learn Python
 **Coding Club Courses**
 * https://ourcodingclub.github.io/tutorials.html
     
+**Further Resources**
+* https://www.codecademy.com/learn/learn-python
+* https://www.datacamp.com/tracks/skill
