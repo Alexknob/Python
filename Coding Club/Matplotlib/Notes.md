@@ -19,7 +19,7 @@ https://pandas.pydata.org/
 * Understand the basics of the Matplotlib plotting package
 * Learn how to bring together other packages to enhance your plots
 * Learn how to further customise the appearance of Matplotlib plots
-* Be inspired to experiment further with Matplotlib!
+* Bonus Matplotlib: plotting data onto maps with Cartopy
 
 
 ### Understand what Pandas is
@@ -53,6 +53,9 @@ https://pandas.pydata.org/
       * tabular data similar to a spreadsheet
       * columns storing a single data-type 
       * indexed by row or column names
+      * can be created from a dictionary
+      * pd.DataFrame()
+      * column names are ordered alphabetically by default
   * Dictionaries
       * core data structure containing Key:value pairs
       * can contain multiple items seperated with a ,
@@ -60,3 +63,50 @@ https://pandas.pydata.org/
       * indicated with {}
       * look up items in the dictionary with []
       
+
+### Learn how to access data from a Pandas DataFrame
+
+* View first n items of data frame with ````dataframename.head((n))````
+* View last n items of data frame with ````dataframename.tail((n))````
+* Access column names with ````dataframename['column-name']````
+* Cannot access columns by their index number: ````dataframename[indexnumber]```` will not work
+* Access row index with ````dataframename.iloc[rowindexnumber]````
+* Access one element by row, column index with ````dataframename.iloc[rowindexnumber, columnindexnumber]````
+* iloc means integer location
+
+
+### Learn how to filter data in a Pandas DataFrame
+
+
+### Learn how to read and sort data from a file
+
+* read in data with ````read_csv()```` function
+* sort data with ````dataframename.sort_values(by = ['columnname'], ascending = True)````
+
+
+### Understand the basics of the Matplotlib plotting package
+
+* Matplotlib is used fro data plotting and visualisation
+* Matplotlib gallery: https://matplotlib.org/2.0.2/gallery.html
+* Most suitable submodule package: pyplot
+* Scatterplot with ````plt.scatter(x, y)````
+* Save figure with ````plt.savefig("my_chart_name.png")````
+
+
+### Learn how to bring together other packages to enhance your plots
+
+* Statistical library in Python: scipy
+* Linear regression with ````linregress(x, y)````
+      * will return slope, intercept, rvalue, pvalue and stderr
+      *  can access each of these values with dot notation
+
+
+### Learn how to further customise the appearance of Matplotlib plots
+
+* can format fontsize, linewidt, colour... of plots
+
+
+### Bonus Matplotlib: plotting data onto maps with Cartopy
+
+* extra python package called cartopy
+* installation via command ````conda install -c conda-forge cartopy````
