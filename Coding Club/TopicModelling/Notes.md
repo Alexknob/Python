@@ -58,3 +58,42 @@ https://ourcodingclub.github.io/tutorials/topic-modelling-python/
           * this shows strong negative correlation between tcot and climate
  
 ### 5. Introduction to topic modelling
+
+**Topic Modelling**
+   * machine learning algorithm to discover topics in a collection of documents
+
+**Two Versions**
+   * Both take a matrix with
+      * row = 1 document
+      * column = 1 word
+      * at each row-column intersection: number of times that a given word appears in the document (bag-of-words format)
+   * Topic Modelling algorithm forms topics from the matrix words
+   * algorithm looks at co-occurence of words in the documents
+   * if words appear together often in the same document they are likely to form a topic
+   * based on this algorithm will form topics (list of words that appear often together) and score words in the topic
+   * the higher the score the more important the topic
+   * but: we have to decide what topics mean
+      * **Latend Dirichlet Allocation (LDA)**
+         * Input: number of topics chosen, fitting method
+         * Output: fitted parameters that tell how important different words are in different topics
+         * works well on long text documents but not so good on short text documents like tweets
+      * **Non-negative Matrix Factorisation (NMF)**
+        
+
+### 6. Cleaning text data
+
+* most important to apply topic modelling algorithm: clean data
+* Python package: ```nltk```
+* *Master function* = combines sub-functions into one big function making code more reusable
+* Removal of *Stopwords* = words that do not tell us much
+* *Stemmig* words = remove the end of the words so similar words will be viewed as the same by the algorithm because they have the same word stem
+* *Bigram* function = word pair combination like i_scream scream_for for_ice ice_cream, this is done to keep the information of word ordering when converting sentences into vector form, we can then filter the vector for unnatural bigrams that do not make sense and remove them
+
+
+### 7. Applying Topic Modelling
+
+* Output:
+
+![image](https://user-images.githubusercontent.com/114161001/223081624-8a67680c-ec25-46af-ad5a-4b21fbd02c9e.png)
+
+  
