@@ -46,6 +46,12 @@ import sklearn
 # package to clean text
 import re
 
+# package to clean text data
+import nltk
+nltk.download('stopwords')
+from nltk.tokenize import RegexpTokenizer
+from nltk.corpus import stopwords
+
 # Import Data
 
 df = pd.read_csv('climate_tweets.csv')
@@ -267,3 +273,126 @@ plt.show()
 
 
 # Introduction to topic modelling
+
+
+# Cleaning Text Data
+
+# Goal: what are the general things people are talking about? 
+
+# Remove Links included in tweets
+    # create remove_links function
+    # this takes any string and removes any link structure specified below
+    
+def remove_links(tweet):
+    '''Takes a string and removes web links from it'''
+    tweet = re.sub(r'http\S+', '', tweet) # remove http links
+    tweet = re.sub(r'bit.ly/\S+', '', tweet) # rempve bitly links
+    tweet = tweet.strip('[link]') # remove [links]
+    return tweet
+
+# Remove users included in tweets
+    # create remove:users function
+    # this takes any tweet and removes users that were tagged or replied to
+    
+def remove_users(tweet):
+    '''Takes a string and removes retweet and @user information'''
+    tweet = re.sub('(RT\s@[A-Za-z]+[A-Za-z0-9-_]+)', '', tweet) # remove retweet
+    tweet = re.sub('(@[A-Za-z]+[A-Za-z0-9-_]+)', '', tweet) # remove tweeted at
+    return tweet
+
+# Make one Master Function combining above functions to clean tweets
+
+# my_stopwords variable to store removed uneccessary words in case they may be interesting
+my_stopwords = nltk.corpus.stopwords.words('english')
+# word_rooter variable to store stemmed words
+    # caution: this is only a rule-of-thumb function and may treat similar words differently
+word_rooter = nltk.stem.snowball.PorterStemmer(ignore_stopwords=False).stem
+# define punctuation that will be removed, all except #
+my_punctuation = '!"$%&\'()*+,-./:;<=>?[\\]^_`{|}~•@'
+
+# cleaning master function
+def clean_tweet(tweet, bigrams=False):
+    # remove users with the above user function
+    tweet = remove_users(tweet)
+    # remove links with the above links function
+    tweet = remove_links(tweet)
+    # make entire tweet lower case
+    tweet = tweet.lower() # lower case
+    # remove any punctuation
+    tweet = re.sub('['+my_punctuation + ']+', ' ', tweet) # strip punctuation
+    # remove double spacing
+    tweet = re.sub('\s+', ' ', tweet) #remove double spacing
+    # remove numbers
+    tweet = re.sub('([0-9]+)', '', tweet) # remove numbers
+        # we now have lowercase tweets equally spaced and with only # punctuation
+    # change tweets from string into list of words
+    # remove stopwords and store these removed words in my_stopwords variable
+    tweet_token_list = [word for word in tweet.split(' ')
+                            if word not in my_stopwords] # remove stopwords
+    # stem words by removing ending so that words have similar word stems and store stemmed words in word_rooter variable
+    tweet_token_list = [word_rooter(word) if '#' not in word else word
+                        for word in tweet_token_list] # apply word rooter
+    # group every pair of words and put them to the end so that we keep information on word ordering
+    if bigrams:
+        tweet_token_list = tweet_token_list+[tweet_token_list[i]+'_'+tweet_token_list[i+1]
+                                            for i in range(len(tweet_token_list)-1)]
+    # join at the end
+    tweet = ' '.join(tweet_token_list)
+    return tweet
+
+# apply function to data frame
+df['clean_tweet'] = df.tweet.apply(clean_tweet)
+
+
+# Applying TOpic Modelling
+
+# import necessary package to transform into vector
+from sklearn.feature_extraction.text import CountVectorizer
+
+# the vectorizer object will be used to transform text to vector form
+    # remove words that appear > 90% in data frame
+    # remove words that appear in < 25 tweets
+vectorizer = CountVectorizer(max_df=0.9, min_df=25, token_pattern='\w+|\$[\d\.]+|\S+')
+
+# apply transformation
+    # this will show the term frequency: frequency of each word appearing
+tf = vectorizer.fit_transform(df['clean_tweet']).toarray()
+
+# tf_feature_names tells us what word each column in the matric represents
+    # look which word made it through the filter
+tf_feature_names = vectorizer.get_feature_names()
+
+# create model object
+
+# import packages for modelling
+from sklearn.decomposition import LatentDirichletAllocation
+
+# choose 10 topics (can change that)
+number_of_topics = 10
+
+# build model with LDA
+    # will choose 10 topics
+    # has fitting method
+    # output: how important different words are in different topics
+model = LatentDirichletAllocation(n_components=number_of_topics, random_state=0)
+
+# apply model
+model.fit(tf)
+
+# inspect generated topics
+
+# define function that shows the topics found from the model and the number of words we would like to see
+def display_topics(model, feature_names, no_top_words):
+    topic_dict = {}
+    for topic_idx, topic in enumerate(model.components_):
+        topic_dict["Topic %d words" % (topic_idx)]= ['{}'.format(feature_names[i])
+                        for i in topic.argsort()[:-no_top_words - 1:-1]]
+        topic_dict["Topic %d weights" % (topic_idx)]= ['{:.1f}'.format(topic[i])
+                        for i in topic.argsort()[:-no_top_words - 1:-1]]
+    return pd.DataFrame(topic_dict)
+
+# apply to model
+# choose 10 words to be seen
+no_top_words = 10
+display_topics(model, tf_feature_names, no_top_words)
+
